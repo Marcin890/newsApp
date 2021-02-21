@@ -1,0 +1,1 @@
+<footer class="footer text-center">Copyright {{ now()->year }} Marcin Kośka</footer>

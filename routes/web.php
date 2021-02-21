@@ -19,18 +19,37 @@ Route::get('/', 'FrontendController@index')->name('home');
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
-    Route::get('/', 'BackendController@index')->name('adminHome');
+    // Boards
+    Route::get('/', 'BoardController@index')->name('boardIndex');
 
-    Route::post('/saveBoard', 'BackendController@saveBoard')->name('saveBoard');
+    Route::post('/createBoard', 'BoardController@create')->name('createBoard');
 
-    Route::post('/saveWebsite', 'BackendController@saveWebsite')->name('saveWebsite');
+    Route::get('/destroyBoard'  . '/{id}', 'BoardController@destroy')->name('destroyBoard');
 
-    Route::get('/board' . '/{id}', 'BackendController@board')->name('board');
-    Route::get('/getBoardNews' . '/{id}', 'BackendController@getBoardNews')->name('getBoardNews');
+    Route::get('/showBoard' . '/{id}', 'BoardController@show')->name('showBoard');
 
-    Route::get('/showBoardNews' . '/{id}', 'BackendController@showBoardNews')->name('showBoardNews');
 
-    Route::get('/readNews' . '/{id}', 'BackendController@readNews')->name('readNews');
+
+    // Websites
+
+    Route::post('/saveWebsite', 'WebsiteController@create')->name('saveWebsite');
+
+    Route::get('/deleteWebsite' . '/{id}', 'WebsiteController@destroy')->name('deleteWebsite');
+
+    // News
+    Route::get('/getBoardNews' . '/{id}', 'NewsController@getBoardNews')->name('getBoardNews');
+
+    Route::get('/showBoardNews' . '/{id}', 'NewsController@showBoardNews')->name('showBoardNews');
+
+
+    Route::get('/readNews' . '/{id}', 'NewsController@readNews')->name('readNews');
+
+    Route::get('/articleNews' . '/{id}', 'NewsController@articleNews')->name('articleNews');
+
+    Route::get('/showUserArticles', 'NewsController@showUserArticles')->name('showUserArticles');
+
+    // User
+    Route::post('/addUserToBoard', 'BoardController@addUserToBoard')->name('addUserToBoard');
 });
 
 Auth::routes();

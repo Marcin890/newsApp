@@ -10944,3 +10944,7 @@ a.text-dark:focus {
   }
 }
 
+.text-read {
+  color: rgba(173, 173, 173, 0.884) !important;
+}
+
