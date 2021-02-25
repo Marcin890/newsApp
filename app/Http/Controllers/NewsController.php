@@ -6,19 +6,28 @@ use Illuminate\Http\Request;
 use KubAT\PhpSimple\HtmlDomParser;
 use App\{Board, Website, News, User};
 use \Illuminate\Foundation\Validation\ValidatesRequests;
-
+use App\Monitor\Repositories\NewsRepository;
 
 class NewsController extends Controller
 {
-    public function saveNews($news, $website_id)
+    public function __construct(NewsRepository $newsRepository)
     {
-        News::create([
-            'content' => $news,
-            'status' => 'unread',
-            'website_id' => $website_id,
-            'created_at' => new \DateTime(),
-        ]);
+        $this->nR = $newsRepository;
     }
+
+    public function refreshAllBoardNews(Request $request)
+    {
+
+        $user = $request->user();
+        $boards = $user->boards()->get();
+
+        foreach ($boards as $board) {
+            $this->getBoardNews($board->id);
+        }
+
+        return redirect()->back();
+    }
+
 
     public function getBoardNews($id)
     {
@@ -26,12 +35,12 @@ class NewsController extends Controller
         $board->updated_at = new \DateTime();
         $board->save();
 
-        $websites = Website::where('board_id', $id)->get();
+        $websites = $board->websites()->get();
 
         foreach ($websites as $website) {
             $savedNews = News::where('website_id', $website->id)->pluck('content')->toArray();
 
-            $news = $this->downloadNews($website->url, $website->selector);
+            $news = $this->nR->downloadNews($website->url, $website->selector);
             $outputNews = array_map(function ($item) {
                 return strip_tags($item);
             }, $news);
@@ -39,17 +48,21 @@ class NewsController extends Controller
             $differenceNews = array_reverse(array_diff($outputNews, $savedNews));
 
             foreach ($differenceNews as $new) {
-                $this->saveNews($new, $website->id);
+                $this->nR->saveNews($new, $website->id);
             }
         }
+    }
+
+    public function refreshBoardNews($id)
+    {
+        $this->getBoardNews($id);
         return redirect()->route('showBoardNews', ['id' => $id]);
     }
 
-
-
     public function showBoardNews($id)
     {
-        $websites = Website::where('board_id', $id)->get();
+        $board = Board::find($id);
+        $websites = $board->websites()->get();
 
         $newsArray = [];
         foreach ($websites as $website) {
@@ -69,34 +82,13 @@ class NewsController extends Controller
             $newsArray = array_merge($newsArray, array($websiteArray));
         }
 
-        $sortByunredNews = $this->sortNews($newsArray);
+        $sortByunredNews = $this->nR->sortNewsByUnreaded($newsArray);
         array_multisort($sortByunredNews, SORT_DESC, $newsArray);
 
 
-        return view('backend.news', ['board_id' => $id, 'websites' => $newsArray]);
+
+        return view('backend.news', ['board_id' => $id, 'websites' => $newsArray, 'updated' => $board->updated_at]);
     }
-
-
-
-
-    public function sortNews($news)
-    {
-        $unredNews = array();
-        foreach ($news as $key => $row) {
-            $unredNews[$key] = $row['unread'];
-        }
-        return $unredNews;
-    }
-
-
-    public function downloadNews($url, $element)
-    {
-        $news = HtmlDomParser::file_get_html($url)->find($element);
-
-        $unique_news = array_unique($news);
-        return $unique_news;
-    }
-
 
     public function readNews($id, Request $request)
     {
@@ -120,29 +112,6 @@ class NewsController extends Controller
         $news->save();
 
         return redirect()->back();
-    }
-
-
-
-    public function news()
-    {
-
-        $webs = [
-            ['https://nil.org.pl/aktualnosci', 'h3'],
-            ['https://izba-lekarska.pl/category/monitor-lekarski/', 'h4'],
-            ['http://www.oil-tarnow.pl/aktualnosci/grupa/1.html', 'h3.aktualnosc_tytul'],
-
-        ];
-
-        $headers = [];
-
-        foreach ($webs as $web) {
-            $header = $this->showHeaders($web[0], $web[1]);
-            $headers = array_merge($headers, $header);
-        }
-
-
-        return view('backend.index', ['headers' => $headers]);
     }
 
     public function showUserArticles(Request $request)

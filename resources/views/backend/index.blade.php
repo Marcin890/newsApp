@@ -1,9 +1,11 @@
 @extends('layouts.backend')
 @section('content')
 
+
+<div class="d-flex"><a href={{ route('refreshAllBoardNews') }} class="btn btn-success btn-lg ml-auto">Refresh News for
+        All Boards</a>
+</div>
 <h2>Create new board</h2>
-
-
 <form method="POST" action="{{ route('createBoard')}}">
     <div class="form-group">
         <label for="name" class="control-label">Name *</label>
@@ -24,19 +26,24 @@
 
             <div class="card-body">
                 <div class="row">
-                    <div class="col-sm-5">
+                    <div class="col-sm-6">
                         <h4><a href="{{ route('showBoard', ['id'=>$board->id]) }}" class="">{{ $board->name }}</a></h4>
                     </div>
+
                     <div class="col-sm-3">
                         <p>Last refresh: {{ $board->updated_at->format('H:i d/m') }}</p>
                     </div>
 
-                    <div class="col-sm-2"><a href="{{ route('showBoard', ['id'=>$board->id]) }}"
-                            class="btn btn-md btn-primary">View</a>
+                    <div class="col-sm-1"><a href="{{ route('showBoardNews', ['id'=>$board->id]) }}"
+                            class="btn btn-sm btn-success">News</a>
                     </div>
 
-                    <div class="col-sm-2"><a href="{{ route('destroyBoard', ['id'=>$board->id]) }}"
-                            class="btn btn-danger btn-md">Delete</a>
+                    <div class="col-sm-1"><a href="{{ route('showBoard', ['id'=>$board->id]) }}"
+                            class="btn btn-sm btn-primary">View</a>
+                    </div>
+
+                    <div class="col-sm-1"><a href="{{ route('destroyBoard', ['id'=>$board->id]) }}"
+                            class="btn btn-danger btn-sm">Delete</a>
                     </div>
 
                 </div>

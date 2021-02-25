@@ -28,16 +28,26 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
     Route::get('/showBoard' . '/{id}', 'BoardController@show')->name('showBoard');
 
+    Route::get('/showUsersOffBoard' . '/{id}', 'BoardController@showUsersOffBoard')->name('showUsersOffBoard');
+
 
 
     // Websites
 
-    Route::post('/saveWebsite', 'WebsiteController@create')->name('saveWebsite');
+    Route::post('/saveWebsite' . '/{website_id?}', 'WebsiteController@create')->name('saveWebsite');
 
     Route::get('/deleteWebsite' . '/{id}', 'WebsiteController@destroy')->name('deleteWebsite');
 
+    Route::get('/addWebsite' . '/{board_id}', 'WebsiteController@addWebsite')->name('addWebsite');
+
+    Route::get('/editWebsite' . '/{id}', 'WebsiteController@edit')->name('editWebsite');
+
+    Route::post('/updateWebsite', 'WebsiteController@update')->name('updateWebsite');
+
     // News
-    Route::get('/getBoardNews' . '/{id}', 'NewsController@getBoardNews')->name('getBoardNews');
+    Route::get('/refreshBoardNews' . '/{id}', 'NewsController@refreshBoardNews')->name('refreshBoardNews');
+
+    Route::get('/refreshAllBoardNews', 'NewsController@refreshAllBoardNews')->name('refreshAllBoardNews');
 
     Route::get('/showBoardNews' . '/{id}', 'NewsController@showBoardNews')->name('showBoardNews');
 
@@ -50,6 +60,8 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
 
     // User
     Route::post('/addUserToBoard', 'BoardController@addUserToBoard')->name('addUserToBoard');
+
+    Route::post('/removeUserFromBoard', 'BoardController@removeUserFromBoard')->name('removeUserFromBoard');
 });
 
 Auth::routes();

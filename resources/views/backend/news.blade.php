@@ -3,12 +3,20 @@
 
 
 
-<div class="d-flex"><a href={{ route('getBoardNews', ['id'=>$board_id]) }}
+<div class="d-flex"><a href={{ route('refreshBoardNews', ['id'=>$board_id]) }}
     class="btn btn-success btn-lg ml-auto">Refresh</a>
 </div>
-{{-- <h3>Last refresh: {{ $board->updated_at->format('H:i d/m') }}</h3> --}}
-<br /><br /><br /><br />
-<div class="accordion" id="accordionExample">
+
+<h3>Last refesh: {{ $updated->format('H:i:s d/m') }}</h3>
+<div class="row mt-5">
+  <div class="col-md-12"><button id="show-unreaded" class="btn btn-md btn-primary btn-success">Hide Unreaded</button>
+    <button id="show-readed" class="btn btn-md btn-primary">Show Readed</button>
+    <button id="show-article" class="btn btn-md btn-primary">Show Article</button></div>
+
+</div>
+
+
+<div class="accordion mt-3" id="accordionExample">
   @foreach($websites as $website)
   <div class="accordion-item">
     <h2 class="accordion-header" id="headingOne">
@@ -28,38 +36,79 @@
         @if($website->news)
 
 
-        <table class="table table-striped mt-2">
-          @foreach ($website->news as $news)
-          <tr>
+        @foreach ($website->news as $news)
 
-            @if($news->status === 'unread')
-            <td class="text-success"><strong>{{ $news->content }}</strong></td>
-            <td></td>
-            <td><a class="btn btn-sm btn-primary keep_position" href="{{ route('readNews', ['id'=>$news->id]) }} "
-                data-accord={{ $website->id }}>Read</a></td>
+        @if($news->status === 'unread')
+        {{-- CARD --}}
+        <div class="card unread">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                {{ $news->content }}
+              </div>
+              <div class="col-md-2">
+                <a class="btn btn-md btn-primary keep_position" href="{{ route('readNews', ['id'=>$news->id]) }} "
+                  data-accord={{ $website->id }}>Read</a>
+              </div>
+              <div class="col-md-2">
+                <a class="btn btn-md btn-success keep_position" href="{{ route('articleNews', ['id'=>$news->id]) }} "
+                  data-accord={{ $website->id }}>Article</a>
+              </div>
+              <div class="col-md-2">
+                <a class="btn btn-secondary btn-md" href="{{ $website->url }}" target="_blank">Zobacz</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{-- ENDCARD --}}
 
-            <td><a class="btn btn-sm btn-primary keep_position" href="{{ route('articleNews', ['id'=>$news->id]) }} "
-                data-accord={{ $website->id }}>Article</a></td>
+        @elseif($news->status ==='read')
+        {{-- CARD --}}
+        <div class="card text-read read d-none ">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                {{ $news->content }}
+              </div>
+              <div class="col-md-2">
+                Read by: {{ $news->user->name }}
+              </div>
+              <div class="col-md-2">
+                {{ $news->updated_at->format('H:i d/m') }}
+              </div>
+              <div class="col-md-2">
+                <a class="btn btn-secondary btn-md" href="{{ $website->url }}" target="_blank">Zobacz</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{-- ENDCARD --}}
 
-            <td><a href="{{ $website->url }}" target="_blank">Zobacz</a></td>
-            @elseif($news->status ==='read')
-            <td class="text-read"><del>{{ $news->content }}</del></td>
-            <td>Read by: {{ $news->user->name }} </td>
-            <td>{{ $news->updated_at->format('H:i d/m') }} </td>
-            <td><a target="_blank" href="{{ $website->url }}">Zobacz</a></td>
-            <td></td>
-            @elseif($news->status ==='article')
-            <td class="text-info"><del>{{ $news->content }}</del></td>
-            <td>Article by: {{ $news->user->name }} </td>
-            <td>{{ $news->updated_at->format('H:i d/m') }} </td>
-            <td><a target="_blank" href="{{ $website->url }}">Zobacz</a></td>
-            <td></td>
-            @endif
+        @elseif($news->status ==='article')
+        {{-- CARD --}}
+        <div class="card text-white article d-none bg-secondary">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                {{ $news->content }}
+              </div>
+              <div class="col-md-2">
+                Article by: {{ $news->user->name }}
+              </div>
+              <div class="col-md-2">
+                {{ $news->updated_at->format('H:i d/m') }}
+              </div>
+              <div class="col-md-2">
+                <a class="btn btn-success btn-md" href="{{ $website->url }}" target="_blank">Zobacz</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{-- ENDCARD --}}
 
-          </tr>
+        @endif
 
-          @endforeach
-        </table>
+        @endforeach
         @endif
 
       </div>
@@ -67,4 +116,8 @@
   </div>
   @endforeach
 </div>
+
+@push('scripts')
+<script src="{{ asset('js/filters.js') }}" defer></script>
+@endpush
 @endsection

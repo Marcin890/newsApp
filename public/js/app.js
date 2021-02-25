@@ -37335,6 +37335,8 @@ module.exports = function(module) {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
+__webpack_require__(/*! ./filters */ "./resources/js/filters.js");
+
 /***/ }),
 
 /***/ "./resources/js/bootstrap.js":
@@ -37379,6 +37381,67 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/filters.js":
+/*!*********************************!*\
+  !*** ./resources/js/filters.js ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+function hideReaded(e) {
+  var readColllection = document.querySelectorAll(".read");
+  readColllection.forEach(function (read) {
+    return read.classList.toggle('d-none');
+  });
+
+  if (e.target.innerHTML === 'Show Readed') {
+    e.target.innerHTML = 'Hide Readed';
+    e.target.classList.add('btn-success');
+  } else {
+    e.target.innerHTML = 'Show Readed';
+    e.target.classList.remove('btn-success');
+  }
+}
+
+function hideArticle(e) {
+  var articleColllection = document.querySelectorAll(".article");
+  articleColllection.forEach(function (article) {
+    return article.classList.toggle('d-none');
+  });
+
+  if (e.target.innerHTML === 'Show Article') {
+    e.target.innerHTML = 'Hide Article';
+    e.target.classList.add('btn-success');
+  } else {
+    e.target.innerHTML = 'Show Article';
+    e.target.classList.remove('btn-success');
+  }
+}
+
+function hideUnread(e) {
+  var articleUnreaded = document.querySelectorAll(".unread");
+  articleUnreaded.forEach(function (article) {
+    return article.classList.toggle('d-none');
+  });
+
+  if (e.target.innerHTML === 'Hide Unreaded') {
+    e.target.innerHTML = 'Show Unreaded';
+    e.target.classList.remove('btn-success');
+  } else {
+    e.target.innerHTML = 'Hide Unreaded';
+    e.target.classList.add('btn-success');
+  }
+}
+
+var buttonHide = document.getElementById('show-readed');
+buttonHide.addEventListener('click', hideReaded);
+var buttonHideArticle = document.getElementById('show-article');
+buttonHideArticle.addEventListener('click', hideArticle);
+var buttonUnreaded = document.getElementById('show-unreaded');
+buttonUnreaded.addEventListener('click', hideUnread);
 
 /***/ }),
 

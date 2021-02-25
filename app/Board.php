@@ -12,4 +12,9 @@ class Board extends Model
     {
         return $this->belongsToMany('App\User');
     }
+
+    public function websites()
+    {
+        return $this->hasMany('App\Website');
+    }
 }
